@@ -2,46 +2,71 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use App\Repository\MarvelRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: MarvelRepository::class)]
-#[ApiResource]
+#[ApiResource(operations: [
+        new Get(),
+        new Post(),
+        new GetCollection(),
+    ],
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+    paginationItemsPerPage: 12,
+)]
+#[ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'name' => 'partial', 'modified' => 'exact'])]
 class Marvel
 {
+    #[Groups(['read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['read', 'write'])]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[Groups(['read', 'write'])]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    #[Groups(['read'])]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $modified = null;
 
+    #[Groups(['read', 'write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $thumbnail = null;
 
+    #[Groups(['read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $resourceURI = null;
 
+    #[Groups(['read'])]
     #[ORM\ManyToMany(targetEntity: Comic::class, inversedBy: 'marvels')]
     private Collection $comics;
 
+    #[Groups(['read'])]
     #[ORM\ManyToMany(targetEntity: Serie::class, inversedBy: 'marvels')]
     private Collection $series;
 
+    #[Groups(['read'])]
     #[ORM\ManyToMany(targetEntity: Storie::class, inversedBy: 'marvels')]
     private Collection $stories;
 
+    #[Groups(['read'])]
     #[ORM\ManyToMany(targetEntity: Event::class, inversedBy: 'marvels')]
     private Collection $events;
 

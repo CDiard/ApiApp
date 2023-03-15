@@ -7,19 +7,23 @@ use App\Repository\EventRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[ApiResource]
 class Event
 {
+    #[Groups(['read'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['read'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $resourceURI = null;
 
+    #[Groups(['read', 'write'])]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
