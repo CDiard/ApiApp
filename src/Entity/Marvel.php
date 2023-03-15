@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\MarvelRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,17 +33,26 @@ class Marvel
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $resourceURI = null;
 
-    #[ORM\ManyToOne(inversedBy: 'marvels')]
-    private ?Comic $comics = null;
+    #[ORM\ManyToMany(targetEntity: Comic::class, inversedBy: 'marvels')]
+    private Collection $comics;
 
-    #[ORM\ManyToOne(inversedBy: 'marvels')]
-    private ?Serie $series = null;
+    #[ORM\ManyToMany(targetEntity: Serie::class, inversedBy: 'marvels')]
+    private Collection $series;
 
-    #[ORM\ManyToOne(inversedBy: 'marvels')]
-    private ?Storie $stories = null;
+    #[ORM\ManyToMany(targetEntity: Storie::class, inversedBy: 'marvels')]
+    private Collection $stories;
 
-    #[ORM\ManyToOne(inversedBy: 'marvels')]
-    private ?Event $events = null;
+    #[ORM\ManyToMany(targetEntity: Event::class, inversedBy: 'marvels')]
+    private Collection $events;
+
+    public function __construct()
+    {
+        $this->comics = new ArrayCollection();
+        $this->series = new ArrayCollection();
+        $this->stories = new ArrayCollection();
+        $this->events = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -108,50 +119,98 @@ class Marvel
         return $this;
     }
 
-    public function getComics(): ?Comic
+    /**
+     * @return Collection<int, Comic>
+     */
+    public function getComics(): Collection
     {
         return $this->comics;
     }
 
-    public function setComics(?Comic $comics): self
+    public function addComic(Comic $comic): self
     {
-        $this->comics = $comics;
+        if (!$this->comics->contains($comic)) {
+            $this->comics->add($comic);
+        }
 
         return $this;
     }
 
-    public function getSeries(): ?Serie
+    public function removeComic(Comic $comic): self
+    {
+        $this->comics->removeElement($comic);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Serie>
+     */
+    public function getSeries(): Collection
     {
         return $this->series;
     }
 
-    public function setSeries(?Serie $series): self
+    public function addSeries(Serie $series): self
     {
-        $this->series = $series;
+        if (!$this->series->contains($series)) {
+            $this->series->add($series);
+        }
 
         return $this;
     }
 
-    public function getStories(): ?Storie
+    public function removeSeries(Serie $series): self
+    {
+        $this->series->removeElement($series);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Storie>
+     */
+    public function getStories(): Collection
     {
         return $this->stories;
     }
 
-    public function setStories(?Storie $stories): self
+    public function addStory(Storie $story): self
     {
-        $this->stories = $stories;
+        if (!$this->stories->contains($story)) {
+            $this->stories->add($story);
+        }
 
         return $this;
     }
 
-    public function getEvents(): ?Event
+    public function removeStory(Storie $story): self
+    {
+        $this->stories->removeElement($story);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getEvents(): Collection
     {
         return $this->events;
     }
 
-    public function setEvents(?Event $events): self
+    public function addEvent(Event $event): self
     {
-        $this->events = $events;
+        if (!$this->events->contains($event)) {
+            $this->events->add($event);
+        }
+
+        return $this;
+    }
+
+    public function removeEvent(Event $event): self
+    {
+        $this->events->removeElement($event);
 
         return $this;
     }

@@ -23,8 +23,9 @@ class Serie
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'series', targetEntity: Marvel::class)]
+    #[ORM\ManyToMany(targetEntity: Marvel::class, mappedBy: 'series')]
     private Collection $marvels;
+
 
     public function __construct()
     {
@@ -72,7 +73,7 @@ class Serie
     {
         if (!$this->marvels->contains($marvel)) {
             $this->marvels->add($marvel);
-            $marvel->setSeries($this);
+            $marvel->addSeries($this);
         }
 
         return $this;
@@ -81,10 +82,7 @@ class Serie
     public function removeMarvel(Marvel $marvel): self
     {
         if ($this->marvels->removeElement($marvel)) {
-            // set the owning side to null (unless already changed)
-            if ($marvel->getSeries() === $this) {
-                $marvel->setSeries(null);
-            }
+            $marvel->removeSeries($this);
         }
 
         return $this;
