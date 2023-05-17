@@ -23,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     normalizationContext: ['groups' => ['read']],
     denormalizationContext: ['groups' => ['write']],
-    paginationItemsPerPage: 30,
+    paginationItemsPerPage: 12,
 )]
 #[ApiFilter(SearchFilter::class, properties: ['id' => 'exact', 'name' => 'partial', 'modified' => 'exact'])]
 class Marvel
